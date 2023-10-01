@@ -22,6 +22,25 @@ class Target(BaseModel):
     description: str
     classes: List
 
+    @validator("classes", allow_reuse=True)
+    def target_classes_are_two_and_unique_and_not_empty_str(cls, target_classes):
+        if len(target_classes) < 2:
+            raise ValueError(
+                f"Target classes must be a list with at least two labels."
+                f"Given `{target_classes}`"
+            )
+        if len(set(target_classes)) < 2:
+            raise ValueError(
+                "Target classes must be a list with at least two unique labels. "
+                f"Given `{target_classes}`"
+            )
+        if "" in target_classes:
+            raise ValueError(
+                "Target classes must not contain empty strings. "
+                f"Given `{target_classes}`"
+            )
+        return target_classes
+
 
 class DataType(str, Enum):
     """Enum for the data type of feature"""
@@ -99,7 +118,7 @@ class SchemaModel(BaseModel):
 
     @validator("modelCategory", allow_reuse=True)
     def valid_problem_category(cls, v):
-        if v not in  ["binary_classification", "multiclass_classification"]:
+        if v not in ["binary_classification", "multiclass_classification"]:
             raise ValueError(f"modelCategory must be in ['binary_classification', 'multiclass_classification']. Given {v}")
         return v
 
