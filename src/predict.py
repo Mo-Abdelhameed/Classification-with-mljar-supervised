@@ -40,8 +40,8 @@ def run_batch_predictions(
     columns = predictions_df.columns
     new_columns = []
     for i in columns:
-        if i.__contains__("prediction_"):
-            new_columns.append(i.strip("prediction_"))
+        if i.startswith("prediction_"):
+            new_columns.append(i[len("prediction_"):])
         else:
             new_columns.append(i)
 
