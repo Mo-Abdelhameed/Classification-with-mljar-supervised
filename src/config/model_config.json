@@ -1,0 +1,17 @@
+{
+  "seed_value": 123,
+  "prediction_field_name": "prediction",
+  "total_time_limit": 10,
+  "train_ensemble": true,
+  "stack_models": false,
+  "eval_metric": "f1",
+  "algorithms": [
+    "Linear",
+    "Random Forest",
+    "Extra Trees",
+    "LightGBM",
+    "Xgboost",
+    "Nearest Neighbors"
+  ]
+
+}
