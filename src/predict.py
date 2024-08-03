@@ -2,7 +2,7 @@ from config import paths
 from logger import get_logger
 from Classifier import Classifier
 from schema.data_schema import load_saved_schema
-from utils import read_csv_in_directory, save_dataframe_as_csv
+from utils import read_csv_in_directory, save_dataframe_as_csv, ResourceTracker
 
 logger = get_logger(task_name="predict")
 
@@ -23,19 +23,20 @@ def run_batch_predictions(
     adds ids into the predictions dataframe,
     and saves the predictions as a CSV file.
     """
-    x_test = read_csv_in_directory(test_dir)
-    data_schema = load_saved_schema(saved_schema_dir)
-    ids = x_test[data_schema.id]
-    x_test.drop(columns=data_schema.id, inplace=True)
+    with ResourceTracker(logger, monitoring_interval=0.1):
+        x_test = read_csv_in_directory(test_dir)
+        data_schema = load_saved_schema(saved_schema_dir)
+        ids = x_test[data_schema.id]
+        x_test.drop(columns=data_schema.id, inplace=True)
 
-    for column in data_schema.categorical_features:
-        x_test[column] = x_test[column].astype(str)
+        for column in data_schema.categorical_features:
+            x_test[column] = x_test[column].astype(str)
 
-    model = Classifier.load(predictor_dir)
+        model = Classifier.load(predictor_dir)
 
-    logger.info("Making predictions...")
+        logger.info("Making predictions...")
 
-    predictions_df = model.predictor.predict_all(x_test)
+        predictions_df = model.predictor.predict_all(x_test)
     predictions_df.drop(columns="label", inplace=True)
     columns = predictions_df.columns
     new_columns = []
